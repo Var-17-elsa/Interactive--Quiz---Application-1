@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <style>
+        *{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        body{
+            background: linear-gradient(135deg,#b0b1a6,#a5e215);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .quiz-container{
+            background: seashell;
+            padding: 20px;
+            border-radius: 15px;
+            width: 350px;
+            text-align: center;
+            box-shadow: 0px 6px 15px rgba(0,0,0,0);
+        }
+        h1{
+            margin-bottom: 25px;
+        }
+        .btn{
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            background:rgb(196, 130, 176);
+            color: black;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn:hover{
+            background: #dfb7d6;
+        }
+        .hide{
+            display: none;
+        }
+        .progress-bar{
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+        .progress{
+            height: 100%;
+            width: 0%;
+            background: black;
+            transition: width 0.3s;
+        }
+        .result{
+            font-size: 20px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="start-screen">
+            <h1>Welcome To Quiz!</h1>
+            <button id="start-btn" class="btn">Start Quiz</button>
+        </div>
+        <div id="quiz-screen" class="hide">
+            <div class="progress-bar">
+                <div class="progress" id="progress"></div>
+            </div>
+            <h2 id="question">Question Text</h2>
+            <div id="answer-buttons"></div>
+        </div>
+        <div id="end-screen" class="hide">
+            <h2>Quiz Finished</h2>
+            <p class="result" id="score-text"></p>
+            <button id="restart-btn" class="btn">Restart Quiz</button>
+        </div>
+    </div>
+    <script>
+        const startBtn = document.getElementById("start-btn");
+        const restartBtn = document.getElementById("restart-btn");
+        const startScreen = document.getElementById("start-screen");
+        const quizScreen = document.getElementById("quiz-screen");
+        const endScreen = document.getElementById("end-screen");
+        const questionElement = document.getElementById("question");
+        const answerButtons = document.getElementById("answer-buttons");
+        const progressBar = document.getElementById("progress");
+        const scoreText = document.getElementById("score-text");
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const questions = [
+            {
+                question: " which language is used for web page?",
+                answers:[
+                    {text: "Python", correct:false},
+                    {text: "JavaScript", correct: true},
+                    {text: "C++", correct:false},
+                    {text: "Java", correct:false},
+                ]
+            },
+            {
+                question: "what does HTML stands for?",
+                answers: [
+                    {text: "Hyperlinks Text Mark Language", correct:false},
+                    {text: "Hyper Text Markup language", correct:true},
+                    {text: "Home Tool Markup Language", correct:false},
+                    {text: "Hyper Transfer Markup language", correct:false},
+                ]
+            },
+            {
+                question: "CSS is used for?",
+                answers: [
+                    {text: "styling web pages", correct:true},
+                    {text: "storing data", correct:false},
+                    {text: "programming Logic", correct:false},
+                    {text: "database management", correct:false},
+                ]
+            },
+            {
+                question:"Which CSS property is used to control the spacing between the elements in a layout?",
+        answers:[
+            {text:"padding",correct: false},
+            {text:"margin",correct: true},
+            {text:"spacing",correct: false},
+            {text:"border",correct: false}
+        ]
+            },
+            {
+                question:"Which CSS property is uesd to change the font size of text?",
+        answers:[
+            {text:"font-size",correct: true},
+            {text:"text-size",correct: false},
+            {text:"font-style",correct: false},
+            {text:"text-style",correct: false}
+        ]
+            },
+            {
+                
+        question:"which programming language is mainly used for adding interactivity to websites?",
+        answers:[
+            {text:"JavaScript",correct: true},
+            {text:"CSS",correct: false},
+            {text:"HTML",correct: false},
+            {text:"Python",correct: false}
+        ]
+            },
+            {
+                question:"which of the following is not a back-end programming language?",
+        answers:[
+            {text:"PHP",correct: false},
+            {text:"Ruby",correct: false},
+            {text:"HTML",correct: true},
+            {text:"Java",correct: false}
+        ] 
+            },
+            {
+                 question:"what is the purpose of script tag in HTML",
+        answers:[
+            {text:"To include external JavaScript file",correct: true},
+            {text:"to include external CSS styles",correct: false},
+            {text:"To define the page's structure",correct: false},
+            {text:"To create hyperlinks",correct: false}
+        ]
+            },
+            {
+                 question:"Which HTML tag is used to create a Hyperlink?",
+        answers:[
+            {text:"{a}",correct: true},
+            {text:"{link}",correct: false},
+            {text:"{h1}",correct: false},
+            {text:"{p}",correct: false}
+        ]
+            },
+            {
+                question:"Which HTML property is uesd to define table in web development?",
+        answers:[
+            {text:"{div}",correct: false},
+            {text:"{form}",correct: false},
+            {text:"{table}",correct: true},
+            {text:"{img}",correct: false}
+        ]
+            }
+        ];
+        startBtn.addEventListener("click",startQuiz);
+        restartBtn.addEventListener("click",startQuiz);
+
+        function startQuiz(){
+            startScreen.classList.add("hide");
+            endScreen.classList.add("hide");
+            quizScreen.classList.remove("hide");
+            currentQuestionIndex = 0;
+            score = 0;
+            showQuestion();
+        }
+
+        function showQuestion(){
+            resetState();
+            let currentQuestion = questions[currentQuestionIndex];
+            questionElement.innerText = currentQuestion.question;
+            currentQuestion.answers.forEach(answer => {const button = document.createElement("button");
+                button.innerText = answer.text;
+                button.classList.add("btn");
+                if(answer.correct){button.dataset.correct = answer.correct;}button.addEventListener("click",selectAnswer);
+                answerButtons.appendChild(button);
+            });
+            updateProgress();
+        }
+        function resetState(){
+            answerButtons.innerHTML = "";
+        }
+        function selectAnswer(e){
+            const selectedBtn = e.target;
+            const correct = selectedBtn.dataset.correct ==="true";
+            if(correct) score++;
+            currentQuestionIndex++;
+            if(currentQuestionIndex < questions.length){
+                showQuestion();
+            } else{
+                showEndScreen();
+            }
+        }
+        function updateProgress(){
+            const progressPercent = ((currentQuestionIndex)/questions.length)*100;
+            progressBar.style.width = progressPercent + "%";
+        }
+        function showEndScreen(){
+            quizScreen.classList.add("hide");
+            endScreen.classList.remove("hide");
+            scoreText.innerText = `You scored ${score} out of ${questions.length}`;
+            progressBar.style.width = "100%";
+        }        
+    </script>
+</body>
+</html>
